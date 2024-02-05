@@ -1,3 +1,4 @@
+const Joi = require('joi');
 const express = require('express');
 const app = express();
 
@@ -26,6 +27,7 @@ app.get('/api/skills', (req, res) => {
 // Routes Parameters (:id)
 app.get('/api/skills/:id', (req, res) => {
   const skill = skills.find((skill) => skill.id === parseInt(req.params.id));
+  // Page/Resource not found (404)
   if (!skill) res.status(404).send('Sorry, skill not found!');
   res.send(skill);
 });
@@ -39,6 +41,25 @@ app.get('/api/posts/:year/:month', (req, res) => {
 // HANDLE POST REQUESTS
 
 app.post('/api/skills', (req, res) => {
+  // Hard Core Validation - Bad Request (404)
+  // if (!req.body.name || req.body.name.length < 3) {
+  //   res.status(400).send('Name is required and min lenght 3 chars!');
+  //   return;
+  // }
+
+  // Validate with joi schema
+  const schema = Joi.object({
+    name: Joi.string().min(3).required(),
+  });
+
+  const result = schema.validate(req.body);
+
+  if (result.error) {
+    res.status(400).send(result.error.message);
+    return;
+  }
+
+  //
   const skill = { id: skills.length + 1, name: req.body.name };
   skills.push(skill);
   res.send(skill);
