@@ -1,16 +1,16 @@
 const Joi = require('joi');
 const express = require('express');
 const app = express();
-
 app.use(express.json());
 
-// HANDLE GET REQUESTS
-
+// Data
 const skills = [
   { id: 1, name: 'JavaScript' },
   { id: 2, name: 'TypeScript' },
   { id: 3, name: 'Node Js' },
 ];
+
+// HANDLE HTTP GET REQUESTS
 
 app.get('/', (req, res) => {
   res.send('<h1>Hello Express JS!</h1>');
@@ -26,9 +26,11 @@ app.get('/api/skills', (req, res) => {
 
 // Routes Parameters (:id)
 app.get('/api/skills/:id', (req, res) => {
+  // Find skill id, if not exist, return 404 - Page not found
   const skill = skills.find((skill) => skill.id === parseInt(req.params.id));
-  // Page/Resource not found (404)
   if (!skill) res.status(404).send('Sorry, skill not found!');
+
+  // Render skill
   res.send(skill);
 });
 
@@ -38,7 +40,7 @@ app.get('/api/posts/:year/:month', (req, res) => {
   console.log(req.query);
 });
 
-// HANDLE POST REQUESTS
+// HANDLE HTTP POST REQUESTS
 
 app.post('/api/skills', (req, res) => {
   // Hard Core Validation - Bad Request (404)
@@ -47,24 +49,50 @@ app.post('/api/skills', (req, res) => {
   //   return;
   // }
 
-  // Validate with joi schema
-  const schema = Joi.object({
-    name: Joi.string().min(3).required(),
-  });
+  // Validate with joi schema, if not exist, return 400 - Bad request
+  const { error } = validateSkill(req.body);
 
-  const result = schema.validate(req.body);
-
-  if (result.error) {
-    res.status(400).send(result.error.message);
+  if (error) {
+    res.status(400).send(error.message);
     return;
   }
 
-  //
+  // Create new skill
   const skill = { id: skills.length + 1, name: req.body.name };
   skills.push(skill);
+  res.send(skill);
+});
+
+// HANDLE HTTP PUT REQUEST
+
+app.put('/api/skills/:id', (req, res) => {
+  // Find skill, if not exist, return 404
+  const skill = skills.find((skill) => skill.id === parseInt(req.params.id));
+  console.log({ skill });
+  if (!skill) res.status(400).send('The skill was not found!');
+
+  // Validate skill, if invalid, return 400
+  const { error } = validateSkill(req.body);
+
+  if (error) {
+    res.status(400).send(error.message);
+    return;
+  }
+
+  // Update skill, return the updated sill
+  skill.name = req.body.name;
   res.send(skill);
 });
 
 // Create port and listen for routes
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Server ready on port ${port}...`));
+
+// Function to validate skill with joi schema
+function validateSkill(skill) {
+  const schema = Joi.object({
+    name: Joi.string().min(3).required(),
+  });
+
+  return schema.validate(skill);
+}
