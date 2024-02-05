@@ -11,7 +11,6 @@ const skills = [
 ];
 
 // HANDLE HTTP GET REQUESTS
-
 app.get('/', (req, res) => {
   res.send('<h1>Hello Express JS!</h1>');
 });
@@ -28,9 +27,8 @@ app.get('/api/skills', (req, res) => {
 app.get('/api/skills/:id', (req, res) => {
   // Find skill id, if not exist, return 404 - Page not found
   const skill = skills.find((skill) => skill.id === parseInt(req.params.id));
-  if (!skill) res.status(404).send('Sorry, skill not found!');
+  if (!skill) return res.status(404).send('Sorry, page not found!');
 
-  // Render skill
   res.send(skill);
 });
 
@@ -40,10 +38,9 @@ app.get('/api/posts/:year/:month', (req, res) => {
   console.log(req.query);
 });
 
-// HANDLE HTTP POST REQUESTS
-
+// HANDLE HTTP POST REQUEST
 app.post('/api/skills', (req, res) => {
-  // Hard Core Validation - Bad Request (404)
+  // Hard Core Validation - Bad Request (400)
   // if (!req.body.name || req.body.name.length < 3) {
   //   res.status(400).send('Name is required and min lenght 3 chars!');
   //   return;
@@ -51,11 +48,7 @@ app.post('/api/skills', (req, res) => {
 
   // Validate with joi schema, if not exist, return 400 - Bad request
   const { error } = validateSkill(req.body);
-
-  if (error) {
-    res.status(400).send(error.message);
-    return;
-  }
+  if (error) return res.status(400).send(error.message);
 
   // Create new skill
   const skill = { id: skills.length + 1, name: req.body.name };
@@ -64,27 +57,34 @@ app.post('/api/skills', (req, res) => {
 });
 
 // HANDLE HTTP PUT REQUEST
-
 app.put('/api/skills/:id', (req, res) => {
   // Find skill, if not exist, return 404
   const skill = skills.find((skill) => skill.id === parseInt(req.params.id));
-  console.log({ skill });
-  if (!skill) res.status(400).send('The skill was not found!');
+  if (!skill) return res.status(404).send('The skill was not found!');
 
   // Validate skill, if invalid, return 400
   const { error } = validateSkill(req.body);
-
-  if (error) {
-    res.status(400).send(error.message);
-    return;
-  }
+  if (error) return res.status(400).send(error.message);
 
   // Update skill, return the updated sill
   skill.name = req.body.name;
   res.send(skill);
 });
 
-// Create port and listen for routes
+// HANDLE HTTP DELETE REQUEST
+app.delete('/api/skills/:id', (req, res) => {
+  // Find skill, if not exist, return 404
+  const skill = skills.find((skill) => skill.id === parseInt(req.params.id));
+  if (!skill) return res.status(404).send('The skill does not exist!');
+
+  // Delete skill and return deleted skill
+  const index = skills.indexOf(skill);
+  skills.splice(index, 1);
+
+  res.send(skill);
+});
+
+// PORT & LISTENER
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Server ready on port ${port}...`));
 
