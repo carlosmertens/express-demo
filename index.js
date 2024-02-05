@@ -6,11 +6,24 @@ app.get('/', (req, res) => {
 });
 
 app.get('/about', (req, res) => {
-  res.send('<p>About Page!</p>');
+  res.send('<h1>About Page!</h1>');
 });
 
 app.get('/api/skills', (req, res) => {
   res.send(['js', 'ts', 'nodejs']);
 });
 
-app.listen(3000, () => console.log('Server ready on port 3000...'));
+// Routes Parameters (:id)
+app.get('/api/skills/:id', (req, res) => {
+  res.send(`<h1>${req.params.id}</h1>`);
+});
+
+// Query Strings Parameters (url: /api/posts/2024/02?sortBy=name)
+app.get('/api/posts/:year/:month', (req, res) => {
+  res.send(req.params);
+  console.log(req.query);
+});
+
+// Create port and listen for routes
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log(`Server ready on port ${port}...`));
