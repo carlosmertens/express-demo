@@ -1,0 +1,14 @@
+{
+  "name": "express-demo",
+  "version": "1.0.0",
+  "description": "Express fundations and basics",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Carlos Mertens",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
