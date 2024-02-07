@@ -1,4 +1,6 @@
 const config = require('config');
+const debug = require('debug')('app:debug');
+const serverLog = require('debug')('app:Server:');
 const morgan = require('morgan');
 const Joi = require('joi');
 const logger = require('./logger');
@@ -7,12 +9,13 @@ const express = require('express');
 const app = express();
 
 // Use config package - Do not use it for sensitive info
-console.log('Customer host:', config.get('Customer.dbConfig.host'));
+// console.log('Customer host:', config.get('Customer.dbConfig.host'));
+debug('Customer host:', config.get('Customer.dbConfig.host'));
 
 // Need to be set manually
-console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
+debug(`NODE_ENV: ${process.env.NODE_ENV}`);
 // express is in development by default
-console.log(app.get('env'));
+debug(app.get('env'));
 
 // Use built-in express middleware
 app.use(express.json());
@@ -27,7 +30,7 @@ app.use(auth);
 // Test in terminal: $export NODE_ENV=production
 if (app.get('env') === 'development') {
   app.use(morgan('tiny'));
-  console.log('Morgan middleware enable...');
+  debug('Morgan middleware enable...');
 }
 
 // Data
@@ -113,7 +116,7 @@ app.delete('/api/skills/:id', (req, res) => {
 
 // PORT & LISTENER
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Server ready on port ${port}...`));
+app.listen(port, () => serverLog(`Ready on port ${port}...`));
 
 // Function to validate skill with joi schema
 function validateSkill(skill) {
