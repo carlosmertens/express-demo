@@ -1,9 +1,13 @@
+const config = require('config');
 const morgan = require('morgan');
 const Joi = require('joi');
 const logger = require('./logger');
 const auth = require('./authenticator');
 const express = require('express');
 const app = express();
+
+// Use config package - Do not use it for sensitive info
+console.log('Customer host:', config.get('Customer.dbConfig.host'));
 
 // Need to be set manually
 console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
