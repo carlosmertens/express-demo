@@ -1,7 +1,17 @@
 const Joi = require('joi');
+const logger = require('./logger');
+const auth = require('./authenticator');
 const express = require('express');
 const app = express();
+
+// Use built-in express middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'));
+
+// Use custom middleware function
+app.use(logger);
+app.use(auth);
 
 // Data
 const skills = [
