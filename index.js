@@ -1,8 +1,14 @@
+const morgan = require('morgan');
 const Joi = require('joi');
 const logger = require('./logger');
 const auth = require('./authenticator');
 const express = require('express');
 const app = express();
+
+// Need to be set manually
+console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
+// express is in development by default
+console.log(app.get('env'));
 
 // Use built-in express middleware
 app.use(express.json());
@@ -12,6 +18,13 @@ app.use(express.static('public'));
 // Use custom middleware function
 app.use(logger);
 app.use(auth);
+
+// Set Environment check
+// Test in terminal: $export NODE_ENV=production
+if (app.get('env') === 'development') {
+  app.use(morgan('tiny'));
+  console.log('Morgan middleware enable...');
+}
 
 // Data
 const skills = [
