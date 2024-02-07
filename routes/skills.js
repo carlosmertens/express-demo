@@ -1,12 +1,12 @@
-const express = require('express');
-const Joi = require('joi');
+import { Router } from 'express';
+import Joi from 'joi';
 
-const router = express.Router();
+const router = Router();
 
 // Function to validate skill with joi schema
 function validateSkill(skill) {
   const schema = Joi.object({
-    name: Joi.string().min(3).required(),
+    name: string().min(3).required(),
   });
 
   return schema.validate(skill);
@@ -80,4 +80,4 @@ router.delete('/:id', (req, res) => {
   res.send(skill);
 });
 
-module.exports = router;
+export default router;

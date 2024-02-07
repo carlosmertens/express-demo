@@ -1,35 +1,36 @@
-const config = require('config');
-const debug = require('debug')('app:debug');
-const serverLog = require('debug')('app:Server:');
-const morgan = require('morgan');
-const logger = require('./middleware/logger');
-const auth = require('./middleware/authenticator');
-const home = require('./routes/home');
-const about = require('./routes/about');
-const posts = require('./routes/posts');
-const skills = require('./routes/skills');
-const express = require('express');
+import config from 'config';
+import debug from 'debug';
+import morgan from 'morgan';
+import logger from './middleware/logger.js';
+import auth from './middleware/authenticator.js';
+import home from './routes/home.js';
+import about from './routes/about.js';
+import posts from './routes/posts.js';
+import skills from './routes/skills.js';
+import express, { json, urlencoded } from 'express';
 const app = express();
+
+const log = debug('app:debug');
 
 // Use config package - Do not use it for sensitive info
 // console.log('Customer host:', config.get('Customer.dbConfig.host'));
-debug('Customer host:', config.get('Customer.dbConfig.host'));
+log('Customer host:', config.get('Customer.dbConfig.host'));
 
 // Need to be set manually
-debug(`NODE_ENV: ${process.env.NODE_ENV}`);
+log(`NODE_ENV: ${process.env.NODE_ENV}`);
 // express is in development by default
-debug(app.get('env'));
+log(app.get('env'));
 
 // Use built-in express middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(json());
+app.use(urlencoded({ extended: true }));
 app.use(express.static('public'));
 
 // Set Environment check
 // Test in terminal: $export NODE_ENV=production
 if (app.get('env') === 'development') {
   app.use(morgan('tiny'));
-  debug('Morgan middleware enable...');
+  log('Morgan middleware enable...');
 }
 
 // Use custom middleware function
@@ -44,4 +45,4 @@ app.use('/api/posts', posts);
 
 // PORT & LISTENER
 const port = process.env.PORT || 3000;
-app.listen(port, () => serverLog(`Ready on port ${port}...`));
+app.listen(port, () => log(`Ready on port ${port}...`));

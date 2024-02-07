@@ -1,6 +1,6 @@
-const express = require('express');
+import { Router } from 'express';
 
-const router = express.Router();
+const router = Router();
 
 // Query Strings Parameters (url: /api/posts/2024/02?sortBy=name)
 router.get('/:year/:month', (req, res) => {
@@ -8,4 +8,4 @@ router.get('/:year/:month', (req, res) => {
   console.log(req.query);
 });
 
-module.exports = router;
+export default router;
